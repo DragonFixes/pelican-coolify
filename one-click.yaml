@@ -15,7 +15,7 @@ services:
     image: redis:alpine
     restart: always
   panel:
-    image: ghcr.io/pelican-dev/wings:main
+    image: ghcr.io/pelican-dev/panel:latest
     restart: always
     volumes:
       - "/srv/pelican/var/:/app/var/"
