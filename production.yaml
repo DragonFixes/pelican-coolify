@@ -1,19 +1,5 @@
 # Coolify One-Click Install for Pelican Game Panel and Wings
 services:
-  database:
-    image: mariadb:10.5
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - "/srv/pelican/database:/var/lib/mysql"
-    environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
-  cache:
-    image: redis:alpine
-    restart: always
   panel:
     image: ghcr.io/pelican-dev/wings:main
     restart: always
