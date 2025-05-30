@@ -43,7 +43,7 @@ services:
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
   wings:
-    image: ghcr.io/pelican/wings:latest
+    image: ghcr.io/pelican-dev/wings:latest
     restart: always
     tty: true
     environment:
