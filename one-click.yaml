@@ -1,59 +1,100 @@
-# Coolify One-Click Install for Pelican Game Panel and Wings
+# documentation: https://pelican.dev/
+# slogan: Pyrodactyl is an open, secure, and scalable servers platform. It's the world's best Pterodactyl panel with incredible performance and unmatched features.
+# tags: game, game server, management, panel, minecraft
+# port: 80
+
 services:
-  database:
-    image: mariadb:latest
-    restart: always
-    command: --default-authentication-plugin=mysql_native_password
-    volumes:
-      - "/srv/pelican/database:/var/lib/mysql"
-    environment:
-      - MYSQL_DATABASE=$DB_DATABASE
-      - MYSQL_USER=$DB_USERNAME
-      - MYSQL_PASSWORD=${DB_PASSWORD}
-      - MYSQL_ROOT_PASSWORD=${SERVICE_PASSWORD_DATABASE}
-  cache:
-    image: redis:alpine
-    restart: always
   panel:
-    image: ghcr.io/pelican-dev/panel:latest
-    restart: always
+    image: 'ghcr.io/pelican-dev/panel:latest'
     volumes:
-      - "/srv/pelican/var/:/app/var/"
-      - "/srv/pelican/nginx/:/etc/nginx/http.d/"
-      - "/srv/pelican/certs/:/etc/letsencrypt/"
-      - "/srv/pelican/logs/:/app/storage/logs"
+      -
+        type: bind
+        source: ./pelican/var
+        target: /app/var
+        is_directory: true
+      - 
+        type: bind
+        source: ./pelican/logs
+        target: /app/storage/logs
+        is_directory: false
+      -
+        type: bind
+        source: ./nginx
+        target: /etc/nginx/http.d
+        is_directory: true
+      -
+        type: bind
+        source: ./letsencrypt
+        target: /etc/letsencrypt
+        is_directory: true
     environment:
-      APP_URL: "${PANEL_URL}"
-      APP_ENV: "production"
-      APP_ENVIRONMENT_ONLY: "false"
-      APP_TIMEZONE: ${TIMEZONE}
-      APP_SERVICE_AUTHOR: "noreply@example.com"
-      CACHE_DRIVER: "redis"
-      SESSION_DRIVER: "redis"
-      QUEUE_DRIVER: "redis"
-      REDIS_HOST: ${REDIS_HOST}
-      DB_HOST: ${DB_HOST:-database}
-      DB_PORT: ${DB_PORT:-3306}
-      DB_USERNAME: ${DB_USERNAME}
-      DB_PASSWORD: ${DB_PASSWORD}
-      DB_DATABASE: ${DB_NAME}
-      MAIL_FROM: ${MAIL_FROM}
-      MAIL_DRIVER: ${MAIL_DRIVER}
-      MAIL_HOST: ${MAIL_HOST}
-      MAIL_PORT: ${MAIL_PORT}
-      MAIL_USERNAME: ${MAIL_USERNAME}
-      MAIL_PASSWORD: ${MAIL_PASSWORD}
-      MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
-      PANEL_URL: ${PANEL_URL}
+      - SERVICE_FQDN_PYRODACTYL=${SERVICE_FQDN_PYRODACTYL}
+      
+      # Below are Pyrodactyl specific EMV VARS.
+      - APP_ENV=production
+      - APP_DEBUG=${APP_DEBUG:-false}
+      - APP_THEME=${APP_THEME:-pterodactyl}
+      - APP_TIMEZONE=${APP_TIMEZONE:-UTC}
+      - APP_URL=${SERVICE_FQDN_PYRODACTYL}
+      - APP_LOCALE=${APP_LOCALE:-en}
+      - APP_ENVIRONMENT_ONLY=false
+
+      - DB_CONNECTION=mariadb
+      - DB_HOST=${DB_HOST:-database}
+      - DB_PORT=${DB_PORT:-3306}
+      - DB_DATABASE=${DB_DATABASE:-pyrodactyl}
+      - DB_USERNAME=${DB_USERNAME:-pyrodactyl}
+      - DB_PASSWORD=${SERVICE_PASSWORD_DATABASE}
+      
+      - REDIS_HOST=${REDIS_HOST:-redis}
+      - REDIS_USERNAME=${REDIS_USERNAME:-default}
+      - REDIS_PASSWORD=${REDIS_PASSWORD:-null}
+      - REDIS_PORT=6379
+
+      - CACHE_DRIVER=redis
+      - QUEUE_CONNECTION=redis
+      - SESSION_DRIVER=redis
+
+      - APP_SERVICE_AUTHOR=${APP_SERVICE_AUTHOR:-panel@pelican.dev}
+      
+  database:
+    image: 'mariadb:latest'
+    environment:
+      # Below are MariaDB specific EMV VARS.
+      - MARIADB_ROOT_PASSWORD=${SERVICE_PASSWORD_DATABASE}
+      - MARIADB_DATABASE=$DB_DATABASE
+      - MARIADB_USER=$DB_USERNAME
+      - MARIADB_PASSWORD=${SERVICE_PASSWORD_DATABASE}
+    volumes:
+      -
+        type: bind
+        source: ./database
+        target: /var/lib/mysql
+        is_directory: true
+
+  redis:
+    image: 'redis:alpine'
+    environment:
+      # Below are Redis specific EMV VARS.
+      - REDIS_PORT=6379
+      - REDIS_USERNAME=$REDIS_USERNAME
+      - REDIS_PASSWORD=$REDIS_PASSWORD
+    volumes:
+      -
+        type: bind
+        source: ./redis
+        target: /data
+        is_directory: true
+
   wings:
-    image: ghcr.io/pelican-dev/wings:latest
+    image: "ghcr.io/pelican-dev/wings:latest"
     restart: always
     tty: true
     environment:
-      TZ: "UTC"
-      WINGS_UID: 988
-      WINGS_GID: 988
-      WINGS_USERNAME: pelican
+      - TZ=$APP_TIMEZONE
+      - WINGS_UID=988
+      - WINGS_GID=988
+      - WINGS_USERNAME=pelican
     volumes:
       - "/var/run/docker.sock:/var/run/docker.sock"
       - "/var/lib/docker/containers/:/var/lib/docker/containers/"
