@@ -39,7 +39,7 @@ services:
       - APP_LOCALE=${APP_LOCALE:-en}
       - APP_ENVIRONMENT_ONLY=false
 
-      - DB_CONNECTION=mariadb
+      - DB_CONNECTION=${DB_CONNECTION:-mysql}
       - DB_HOST=${DB_HOST:-database}
       - DB_PORT=${DB_PORT:-3306}
       - DB_DATABASE=${DB_DATABASE:-panel}
