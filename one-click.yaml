@@ -1,5 +1,5 @@
 # documentation: https://pelican.dev/
-# slogan: Pyrodactyl is an open, secure, and scalable servers platform. It's the world's best Pterodactyl panel with incredible performance and unmatched features.
+# slogan: Pelican is an open, secure, and scalable servers platform.
 # tags: game, game server, management, panel, minecraft
 # port: 80
 
@@ -28,22 +28,22 @@ services:
         target: /etc/letsencrypt
         is_directory: true
     environment:
-      - SERVICE_FQDN_PYRODACTYL=${SERVICE_FQDN_PYRODACTYL}
+      - SERVICE_FQDN_PELICAN=${SERVICE_FQDN_PELICAN}
       
-      # Below are Pyrodactyl specific EMV VARS.
+      # Below are Pelican specific EMV VARS.
       - APP_ENV=production
       - APP_DEBUG=${APP_DEBUG:-false}
-      - APP_THEME=${APP_THEME:-pterodactyl}
+      - APP_THEME=${APP_THEME:-pelican}
       - APP_TIMEZONE=${APP_TIMEZONE:-UTC}
-      - APP_URL=${SERVICE_FQDN_PYRODACTYL}
+      - APP_URL=${SERVICE_FQDN_PELICAN}
       - APP_LOCALE=${APP_LOCALE:-en}
       - APP_ENVIRONMENT_ONLY=false
 
       - DB_CONNECTION=mariadb
       - DB_HOST=${DB_HOST:-database}
       - DB_PORT=${DB_PORT:-3306}
-      - DB_DATABASE=${DB_DATABASE:-pyrodactyl}
-      - DB_USERNAME=${DB_USERNAME:-pyrodactyl}
+      - DB_DATABASE=${DB_DATABASE:-panel}
+      - DB_USERNAME=${DB_USERNAME:-pelican}
       - DB_PASSWORD=${SERVICE_PASSWORD_DATABASE}
       
       - REDIS_HOST=${REDIS_HOST:-redis}
