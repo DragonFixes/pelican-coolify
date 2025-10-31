@@ -1,16 +1,16 @@
 # Coolify One-Click Install for Pelican Game Panel and Wings
 services:
   database:
-    image: mariadb:10.5
+    image: mariadb:latest
     restart: always
     command: --default-authentication-plugin=mysql_native_password
     volumes:
       - "/srv/pelican/database:/var/lib/mysql"
     environment:
-      MYSQL_DATABASE: ${DB_NAME}
-      MYSQL_USER: ${DB_USERNAME}
-      MYSQL_PASSWORD: ${DB_PASSWORD}
-      MYSQL_ROOT_PASSWORD: ${DB_ROOT_PASSWORD}
+      - MYSQL_DATABASE=$DB_DATABASE
+      - MYSQL_USER=$DB_USERNAME
+      - MYSQL_PASSWORD=${DB_PASSWORD}
+      - MYSQL_ROOT_PASSWORD=${SERVICE_PASSWORD_DATABASE}
   cache:
     image: redis:alpine
     restart: always
@@ -23,7 +23,7 @@ services:
       - "/srv/pelican/certs/:/etc/letsencrypt/"
       - "/srv/pelican/logs/:/app/storage/logs"
     environment:
-      APP_URL: "http://${PANEL_URL}"
+      APP_URL: "${PANEL_URL}"
       APP_ENV: "production"
       APP_ENVIRONMENT_ONLY: "false"
       APP_TIMEZONE: ${TIMEZONE}
@@ -32,9 +32,11 @@ services:
       SESSION_DRIVER: "redis"
       QUEUE_DRIVER: "redis"
       REDIS_HOST: ${REDIS_HOST}
-      DB_HOST: ${DB_HOST}
-      DB_PORT: ${DB_PORT}
+      DB_HOST: ${DB_HOST:-database}
+      DB_PORT: ${DB_PORT:-3306}
+      DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
+      DB_DATABASE: ${DB_NAME}
       MAIL_FROM: ${MAIL_FROM}
       MAIL_DRIVER: ${MAIL_DRIVER}
       MAIL_HOST: ${MAIL_HOST}
@@ -42,6 +44,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      PANEL_URL: ${PANEL_URL}
   wings:
     image: ghcr.io/pelican-dev/wings:latest
     restart: always
