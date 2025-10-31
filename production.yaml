@@ -20,6 +20,7 @@ services:
       REDIS_HOST: ${REDIS_HOST}
       DB_HOST: ${DB_HOST}
       DB_PORT: ${DB_PORT}
+      DB_USERNAME: ${DB_USERNAME}
       DB_PASSWORD: ${DB_PASSWORD}
       MAIL_FROM: ${MAIL_FROM}
       MAIL_DRIVER: ${MAIL_DRIVER}
@@ -28,6 +29,7 @@ services:
       MAIL_USERNAME: ${MAIL_USERNAME}
       MAIL_PASSWORD: ${MAIL_PASSWORD}
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
+      PANEL_URL: ${PANEL_URL}
   wings:
     image: ghcr.io/pelican/wings:latest
     restart: always
