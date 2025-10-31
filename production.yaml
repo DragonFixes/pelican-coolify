@@ -1,7 +1,7 @@
 # Coolify One-Click Install for Pelican Game Panel and Wings
 services:
   panel:
-    image: ghcr.io/pelican-dev/wings:main
+    image: ghcr.io/pelican-dev/panel:main
     restart: always
     volumes:
       - "/srv/pelican/var/:/app/var/"
@@ -32,7 +32,7 @@ services:
       MAIL_ENCRYPTION: ${MAIL_ENCRYPTION}
       PANEL_URL: ${PANEL_URL}
   wings:
-    image: ghcr.io/pelican/wings:latest
+    image: ghcr.io/pelican-dev/wings:main
     restart: always
     tty: true
     environment:
